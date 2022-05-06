@@ -11,6 +11,7 @@ export enum AccountType {
 export interface IAccount extends Document {
     accountType: AccountType;
     accountData: Schema.Types.ObjectId | String;
+    isAdmin: Boolean;
 }
 
 /** Interface for the normalAccountData schema */
@@ -27,7 +28,7 @@ export interface IThirdPartyAccountData extends Document {
 }
 
 /** Third Party Account data (Reference to an id) */
-const thirdPartyAccountData : Schema = new Schema({
+export const thirdPartyAccountData : Schema = new Schema({
     thirdPartyId: {
         type: String,
         required: true
@@ -36,7 +37,7 @@ const thirdPartyAccountData : Schema = new Schema({
 
 
 /** Defines the account data for normal users */
-const normalAccountData : Schema = new Schema({
+export const normalAccountData : Schema = new Schema({
     firstName: {
         type: String,
         minlength: 3,
@@ -71,6 +72,10 @@ const accountSchema : Schema = new Schema({
     },
     accountData: {
         type: [normalAccountData || thirdPartyAccountData],
+        required: true
+    },
+    isAdmin: {
+        type: Boolean,
         required: true
     }
 }, { timestamps: true });
