@@ -1,10 +1,67 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
+/** Defines what type of account there is */
 export enum AccountType {
-    Email,
+    Normal,
     Google,
     Facebook
 }
+
+/** Interface for the account schema */
+export interface IAccount extends Document {
+    accountType: AccountType;
+    accountData: Schema.Types.ObjectId | String;
+}
+
+/** Interface for the normalAccountData schema */
+export interface INnormalAccountData extends Document {
+    firstName: String;
+    lastName: String;
+    email: String;
+    hashedPassword: String;
+}
+
+/** Interface for the thirdPartyAccountData schema */
+export interface IThirdPartyAccountData extends Document {
+    thirdPartyId: String;
+}
+
+/** Third Party Account data (Reference to an id) */
+const thirdPartyAccountData : Schema = new Schema({
+    thirdPartyId: {
+        type: String,
+        required: true
+    }
+});
+
+
+/** Defines the account data for normal users */
+const normalAccountData : Schema = new Schema({
+    firstName: {
+        type: String,
+        minlength: 3,
+        maxlength: 25,
+        required: true
+    },
+    lastName: {
+        type: String,
+        minlength: 3,
+        maxlength: 25,
+        required: true
+    },
+    email: {
+        type: String,
+        minlength: 3,
+        maxlength: 255,
+        required: true,
+        unique: true
+    },
+    hashedPassword: {
+        type: String,
+        required: true
+    }
+}, { _id: false });
+
 
 /** Defines the account, if its a google, facebook or a normal account */
 const accountSchema : Schema = new Schema({
@@ -13,10 +70,10 @@ const accountSchema : Schema = new Schema({
         required: true
     },
     accountData: {
-        type: Schema.Types.ObjectId || String,
+        type: [normalAccountData || thirdPartyAccountData],
         required: true
     }
-});
+}, { timestamps: true });
 
 
-export default model('Account', accountSchema);
+export default model<IAccount>('Account', accountSchema);
