@@ -1,9 +1,9 @@
 import path from "path";
 import mongoose from "mongoose";
+import router from "./src/routes";
 import cookieParser from "cookie-parser";
 import express, { Express } from "express";
 import envConfig from "./src/configs/env.config";
-
 
 // Connect to mongoDB using moongose
 mongoose.connect(
@@ -23,6 +23,10 @@ app.use(cookieParser());
 // Define public folders
 app.use(express.static(path.join(__dirname, 'public'), {}));
 app.use(express.static(path.join(__dirname, '../frontend/build'), {}));
+
+
+// Routes
+app.use('/api', router);
 
 
 // Entry point
