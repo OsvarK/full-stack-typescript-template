@@ -1,4 +1,4 @@
-import Crypto from "node:crypto";
+import Crypto from "crypto";
 
 export const hash = (data: string, secret: any) => {
     return Crypto
