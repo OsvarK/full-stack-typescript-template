@@ -10,7 +10,12 @@ const envConfig = {
         db: process.env.MONGODB_DATABASE_NAME || 'no database name'
     },
     secrets: {
-        passwordHash:  process.env.SECRET_PASSWORD_HASH
+        passwordHash:  process.env.SECRET_PASSWORD_HASH || 'no password secret',
+        googleClientId:  process.env.GOOGLE_CLIENT_ID || 'no google client id',
+        jwt: process.env.JWT_SECRET || 'No Jwt Secret'
+    },
+    names: {
+        authCookie: process.env.AUTH_COOKIE_NAME || 'Token'
     }
 }
 

@@ -1,7 +1,18 @@
-import ReactDOM from "react-dom";
+import { createRoot } from 'react-dom/client';
+import Router from "./router"
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 
 const App = () => {
-    return <p>Hello</p>
+    return (
+        <>
+            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                <Router />
+            </GoogleOAuthProvider>
+        </>
+    )
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);

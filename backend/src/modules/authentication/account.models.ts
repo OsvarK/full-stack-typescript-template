@@ -1,33 +1,24 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model } from "mongoose";
 
 /** Defines what type of account there is */
 export enum AccountType {
     Normal = "Normal",
-    Google = "Google",
-    Facebook = "Facebook"
+    Google = "Google"
 }
 
 /** Interface for the account schema */
 export interface IAccount {
+    _id?: String,
     accountType: AccountType;
-    accountData: INnormalAccountData | IThirdPartyAccountData;
-    isAdmin: Boolean;
-}
-
-/** Interface for the normalAccountData schema */
-export interface INnormalAccountData {
     firstName: String;
     lastName: String;
     email: String;
-    hashedPassword: String;
+    emailVerified: Boolean;
+    hashedPassword?: String;
+    isAdmin: Boolean;
 }
 
-/** Interface for the thirdPartyAccountData schema */
-export interface IThirdPartyAccountData {
-    thirdPartyId: String;
-}
-
-/** Defines the account, if its a google, facebook or a normal account */
+/** Defines the account model */
 const accountSchema : Schema = new Schema({
     accountType: {
         type: String,
@@ -35,41 +26,31 @@ const accountSchema : Schema = new Schema({
         default: AccountType.Normal,
         required: true
     },
-    accountData: {
-        type: [
-            {
-                firstName: {
-                    type: String,
-                    minlength: 3,
-                    maxlength: 25,
-                    required: true
-                },
-                lastName: {
-                    type: String,
-                    minlength: 3,
-                    maxlength: 25,
-                    required: true
-                },
-                email: {
-                    type: String,
-                    minlength: 3,
-                    maxlength: 255,
-                    required: true,
-                    unique: true
-                },
-                hashedPassword: {
-                    type: String,
-                    required: true
-                }
-            }
-            ||
-            {
-                thirdPartyId: {
-                    type: String,
-                    required: true
-                }
-            }
-        ],
+    firstName: {
+        type: String,
+        minlength: 3,
+        maxlength: 25,
+        required: true
+    },
+    lastName: {
+        type: String,
+        minlength: 3,
+        maxlength: 25,
+        required: true
+    },
+    email: {
+        type: String,
+        minlength: 3,
+        maxlength: 255,
+        required: true,
+        unique: true
+    },
+    hashedPassword: {
+        type: String,
+        required: false
+    },
+    emailVerified: {
+        type: Boolean,
         required: true
     },
     isAdmin: {
