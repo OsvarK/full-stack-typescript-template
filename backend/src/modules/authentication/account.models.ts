@@ -9,6 +9,7 @@ export enum AccountType {
 /** Interface for the account schema */
 export interface IAccount {
     _id?: String,
+    createdAt?: Date,
     accountType: AccountType;
     firstName: String;
     lastName: String;

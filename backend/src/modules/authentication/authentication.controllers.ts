@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { sign } from "jsonwebtoken";
+import jwt, { JwtPayload, VerifyCallback } from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import { CallbackError } from "mongoose";
 import { hash } from "../../utils/Hash.util";
@@ -113,18 +113,30 @@ const logoutUser = async (req: Request, res: Response) => {
 
 /** Retrives all the users in the database */
 const getAllAccounts = async (req: Request, res: Response) => {
-    accountModel.find((error: CallbackError, accounts: IAccount[]) => {
-        if (error) return res.sendStatus(500);
+    accountModel.find((err: CallbackError, accounts: IAccount[]) => {
+        if (err) return res.sendStatus(500);
         return res.status(200).json(accounts);
     });
 };
 
 
+/** Verifies the token and return the user data */
+const verifyUser = async (req: Request, res: Response) => {
+    const token = req.cookies[envConfig.names.authCookie];
+    try {
+        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
+        accountModel.findById(decoded._id, (err: CallbackError, user: IAccount) => {
+            if (err) return res.status(422).json({error: 'The ID may not be valid!'});
+            return res.status(200).json(user)
+        });
+    } catch (ex) { res.sendStatus(400) }
+}
+
 /** Set the cookie that defines the user's authentication */
 const setAccountLoggedIn = (res: Response, accountId: String) => {
     //Expires in 24H: 86400sec
 
-    const token = sign(
+    const token = jwt.sign(
         {_id: accountId},
         envConfig.secrets.jwt,
         {expiresIn: '86400s'}
@@ -152,7 +164,8 @@ const controller = {
     createAccount,
     loginGoogle,
     logoutUser,
-    loginUser
+    loginUser,
+    verifyUser
 };
 
 export default controller;

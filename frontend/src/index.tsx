@@ -1,6 +1,8 @@
 import { createRoot } from 'react-dom/client';
 import Router from "./router"
+
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { AuthenticationProvider, AuthContextdefaultProperties } from './contexts/authentication.context';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 
@@ -8,7 +10,9 @@ const App = () => {
     return (
         <>
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                <Router />
+                <AuthenticationProvider methods={AuthContextdefaultProperties.methods}>
+                    <Router />
+                </AuthenticationProvider>
             </GoogleOAuthProvider>
         </>
     )
