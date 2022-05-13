@@ -6,7 +6,9 @@ const Google = () => {
     const auth = useAuth();
 
     return (
-        <GoogleLogin 
+        <GoogleLogin
+            size='large'
+            width='350px'
             onSuccess={(res) => auth.methods.loginUsingGoogle(res.credential as string, "/")}
             onError={() => {
                 console.log('Failed')
