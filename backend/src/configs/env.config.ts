@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const envConfig = {
+    url: process.env.URL || "http://localhost:3000",
     mongoDB: {
         url: process.env.MONGODB_DATABASE_URL || 'no connection string',
         db: process.env.MONGODB_DATABASE_NAME || 'no database name'
@@ -16,6 +17,11 @@ const envConfig = {
     },
     names: {
         authCookie: process.env.AUTH_COOKIE_NAME || 'Token'
+    },
+    email: {
+        service: process.env.EMAIL_SERVICE || 'No service',
+        user: process.env.EMAIL_USER || 'No user',
+        pass: process.env.EMAIL_PASS || 'No pass',
     }
 }
 

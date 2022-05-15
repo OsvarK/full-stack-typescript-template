@@ -1,11 +1,12 @@
-import { Request, Response } from "express"
+import e, { Request, Response } from "express"
 import jwt, { JwtPayload, VerifyCallback } from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import { CallbackError } from "mongoose";
 import { hash } from "../../utils/Hash.util";
 import { validatePassword } from "../../utils/validation.utils";
 import envConfig from "../../configs/env.config";
-import accountModel, { IAccount, AccountType } from "./account.models";
+import accountModel, { IAccount, AccountType } from "./account.model";
+import { sendEmail } from "../../utils/email.util";
 
 
 /** Login the user using Google Identity Services */
@@ -99,8 +100,16 @@ const createAccount = async (req: Request, res: Response) => {
         setAccountLoggedIn(res, (doc._id as string));
         res.sendStatus(201);
     });
-    
+
+    sendVerifyEmail(req.body.email);
 };
+
+
+/** Delete account by id */
+const deleteAccount = async (req: Request, res: Response) => {
+    await accountModel.findByIdAndDelete(req.params.id)
+    return res.sendStatus(200);
+}
 
 
 /** Logout the user */
@@ -108,7 +117,6 @@ const logoutUser = async (req: Request, res: Response) => {
     terminateAccountSession(res);
     return res.sendStatus(200);
 };
-
 
 
 /** Retrives all the users in the database */
@@ -131,6 +139,33 @@ const verifyUser = async (req: Request, res: Response) => {
         });
     } catch (ex) { res.sendStatus(400) }
 }
+
+/** Verify email */
+const verifyEmail = async (req: Request, res: Response) => {
+    const token = req.params.jwt;
+    try {
+        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
+        accountModel.findOneAndUpdate({email: decoded.email}, {
+            emailVerified: true
+        }, (err: CallbackError) => {
+            if (err) return res.sendStatus(422);
+            return res.sendStatus(200);
+        });
+    } catch { return res.sendStatus(422) }
+}
+
+
+/** Send email that user can click on to verify there email with */
+const sendVerifyEmail = (email: string) => {
+    const token = jwt.sign(
+        {email: email},
+        envConfig.secrets.jwt,
+        {expiresIn: '600s'}
+    );
+
+    sendEmail(email, 'Email verification', `Click this link to verify your email: ${envConfig.url + '/api/auth/verifyemail/'}` + token.toString())
+}
+
 
 /** Set the cookie that defines the user's authentication */
 const setAccountLoggedIn = (res: Response, accountId: String) => {
@@ -156,7 +191,8 @@ const terminateAccountSession = (res: Response) => {
 
 /** Exports all the admin controllers */
 export const adminController = {
-    getAllAccounts
+    getAllAccounts,
+    deleteAccount
 }
 
 /** Exports all the default controllers */
@@ -165,7 +201,8 @@ const controller = {
     loginGoogle,
     logoutUser,
     loginUser,
-    verifyUser
+    verifyUser,
+    verifyEmail
 };
 
 export default controller;
