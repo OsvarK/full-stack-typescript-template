@@ -99,9 +99,8 @@ const createAccount = async (req: Request, res: Response) => {
 
         setAccountLoggedIn(res, (doc._id as string));
         res.sendStatus(201);
+        sendVerifyEmail(req.body.email);
     });
-
-    sendVerifyEmail(req.body.email);
 };
 
 
