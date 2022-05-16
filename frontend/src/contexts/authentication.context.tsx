@@ -1,6 +1,10 @@
 import {createContext, useContext, FC, useEffect} from 'react';
 import useLocalStorage from '../utils/localStorage.utils';
 
+export interface MethodCallBack {
+    (data: Response): void;
+}
+
 export interface userData {
 
 }
@@ -9,10 +13,10 @@ export interface userData {
 export interface IAuthenticationContext {
     children?: any,
     methods: {
-        logout: (onSuccessRedirectTo: string) => void,
-        login: (email: string, password: string, onSuccessRedirectTo: string) => void,
-        loginUsingGoogle: (googleToken:string, onSuccessRedirectTo: string) => void
-        signup: (email: string, firstname: string, lastname: string, password: string, onSuccessRedirectTo: string) => void
+        logout: (callback: MethodCallBack) => void,
+        login: (email: string, password: string, callback: MethodCallBack) => void,
+        loginUsingGoogle: (googleToken:string, callback: MethodCallBack) => void
+        signup: (email: string, firstname: string, lastname: string, password: string, callback: MethodCallBack) => void
     },
     user: userData | null
 }
@@ -51,25 +55,18 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
     }, []);
 
     /** Login the user using google credentials */
-    const loginUsingGoogle = (googleToken: string, onSuccessRedirectTo: string) => {
+    const loginUsingGoogle = (googleToken: string, callback: MethodCallBack) => {
         fetch('/api/auth/login/google',
         {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({"googleToken": googleToken})
-        }).then(res => {
-            if (res.status == 401) {
-                console.log("Invalid credentials!")
-                return;
-            };
-            if (res.ok) window.location.href = onSuccessRedirectTo;
-            console.log(res)
-        });
+        }).then((res: Response) => callback(res));
     }
 
 
     /** Login the user using email and password */
-    const login = (email: string, password: string, onSuccessRedirectTo: string) => {
+    const login = (email: string, password: string, callback: MethodCallBack) => {
         fetch('/api/auth/login',
         {
             method: 'POST',
@@ -78,18 +75,12 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
                 "email": email,
                 "password": password
             })
-        }).then(res => {
-            if (res.status == 401) {
-                console.log("Invalid credentials!")
-                return;
-            };
-            if (res.ok) window.location.href = onSuccessRedirectTo;
-        });
+        }).then((res: Response) => callback(res));
     };
 
 
     /** Signup a user */
-    const signup = (email: string, firstname: string, lastname: string, password: string, onSuccessRedirectTo: string) => {
+    const signup = (email: string, firstname: string, lastname: string, password: string, callback: MethodCallBack) => {
         fetch('/api/auth/signup',
         {
             method: 'POST',
@@ -100,19 +91,16 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
                 "lastName": lastname,
                 "password": password
             })
-        }).then(res => {
-            if (res.ok) window.location.href = onSuccessRedirectTo;
-            res.json().then(data => console.log(data))
-        });
+        }).then((res: Response) => callback(res));
     };
 
 
     /** Logout the authenticated user */
-    const logout = (onSuccessRedirectTo: string) => {
+    const logout = (callback: MethodCallBack) => {
         fetch('/api/auth/logout')
-        .then(() => {
+        .then((res: Response) => {
             SetUser(null);
-            window.location.href = onSuccessRedirectTo
+            callback(res);
         });
     };
 

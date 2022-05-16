@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import ThirdPartyLogin from "../../components/thirdPartyLogin.cmpt";
 import { useAuth } from "../../contexts/authentication.context";
@@ -7,6 +8,8 @@ import "./authenticate.css"
 
 const LoginPage = () => {
     const auth = useAuth();
+    const navigate = useNavigate();
+    const [alert, SetAlert] = useState(null);
     const [hidePass, SetHidePass] = useState(true);
     const [input, SetInput] = useState({
         email: "",
@@ -26,18 +29,27 @@ const LoginPage = () => {
         auth.methods.login(
             input.email,
             input.password,
-            '/login'
+            (res: Response) => {
+                if (res.ok) return navigate("/p");
+                res.json().then(data => {
+                    SetAlert(data);
+                });
+            }
         );
     }
 
     return (
         <div className="form-container">
             <div><h1>Welcome Back</h1></div>
+            {alert !== null ?
+            <div className="alert-container">
+                <p>{alert}</p>
+            </div> : null }
             <form onSubmit={handleSubmit}>
-                <div className="input-container"><input onChange={handleChange} type="email" name="email" placeholder="Email.." /></div>
+                <div className="input-container"><input required  onChange={handleChange} type="email" name="email" placeholder="Email.." /></div>
                 <div className="input-container">
-                    <input onChange={handleChange} type={hidePass ? "password" : "text"} name="rePassword"autoComplete="off" placeholder="Re-Password.." />
-                    <div onClick={() => SetHidePass(!hidePass)} className="icon">{hidePass ? <IoEyeOffOutline /> : <IoEyeOutline />}</div>
+                    <input className="password-input" required  onChange={handleChange} type={hidePass ? "password" : "text"} name="password" autoComplete="off" placeholder="Password.." />
+                    <div onClick={() => SetHidePass(!hidePass)} className="icon noselect">{hidePass ? <IoEyeOffOutline /> : <IoEyeOutline />}</div>
                 </div>
                 <button className="btn1">Login</button>
             </form>

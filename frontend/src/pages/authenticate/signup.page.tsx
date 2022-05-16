@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { IoEyeOutline, IoEyeOffOutline, IoCheckmarkOutline, IoClose } from "react-icons/io5";
 import ThirdPartyLogin from "../../components/thirdPartyLogin.cmpt";
@@ -6,8 +7,10 @@ import { useAuth } from "../../contexts/authentication.context";
 import "./authenticate.css"
 
 const SignupPage = () => {
+    const navigate = useNavigate();
     const auth = useAuth();
     const [hidePass, SetHidePass] = useState(true);
+    const [alert, SetAlert] = useState(null);
     const [passValidation, SetPassValidation] = useState({
         lenght: false,
         symbol: false,
@@ -26,7 +29,7 @@ const SignupPage = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
-        if (e.target.name = "password") {
+        if (e.target.name === "password") {
 
             const symbol = new RegExp("(?=.*?[#?!@$%^&*-])");
             const number = new RegExp("(?=.*?[0-9])");
@@ -51,26 +54,50 @@ const SignupPage = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(input);
+        const validPass = passValidation.lenght &&
+        passValidation.symbol &&
+        passValidation.number &&
+        passValidation.uppercase &&
+        passValidation.lowercase;
+
+        if (!validPass) {
+            SetAlert("Password does not meet password requirements");
+            return;
+        }
+
+        if (input.password !== input.rePassword) {
+            SetAlert("Passwords don't match");
+            return;
+        }
+
         auth.methods.signup(
             input.email,
             input.firstName,
             input.lastName,
             input.password,
-            '/signup'
+            (res: Response) => {
+                if (res.ok) return navigate("/p");
+                res.json().then(data => {
+                    SetAlert(data);
+                });
+            }
         );
     }
 
     return (
         <div className="form-container">
             <div><h1>Create your Account</h1></div>
+            {alert !== null ?
+            <div className="alert-container">
+                <p>{alert}</p>
+            </div> : null }
             <form onSubmit={handleSubmit}>
-                <div className="input-container"><input onChange={handleChange} type="text" name="firstName" placeholder="First name.." /></div>
-                <div className="input-container"><input onChange={handleChange} type="text" name="lastName" placeholder="Last name.." /></div>
-                <div className="input-container"><input onChange={handleChange} type="email" name="email" placeholder="Email.." /></div>
+                <div className="input-container"><input onChange={handleChange} required type="text" name="firstName" placeholder="First name.." /></div>
+                <div className="input-container"><input onChange={handleChange} required type="text" name="lastName" placeholder="Last name.." /></div>
+                <div className="input-container"><input onChange={handleChange} required type="email" name="email" placeholder="Email.." /></div>
                 <div className="input-container">
-                    <input onChange={handleChange} type={hidePass ? "password" : "text"} name="password" placeholder="Password.." />
-                    <div onClick={() => SetHidePass(!hidePass)} className="icon">{hidePass ? <IoEyeOffOutline /> : <IoEyeOutline />}</div>
+                    <input className="password-input" onChange={handleChange} required  type={hidePass ? "password" : "text"} name="password" placeholder="Password.." />
+                    <div onClick={() => SetHidePass(!hidePass)} className="icon noselect">{hidePass ? <IoEyeOffOutline /> : <IoEyeOutline />}</div>
                 </div>
                 <div className="password-hint-container">
                     <div style={{color: passValidation.lowercase ? "black" : "#bcbecb"}}><div>{passValidation.lowercase ? <IoCheckmarkOutline /> : <IoClose />}</div><label>one uppercase</label></div>
@@ -80,8 +107,8 @@ const SignupPage = () => {
                     <div style={{color: passValidation.symbol ? "black" : "#bcbecb"}}><div>{passValidation.symbol ? <IoCheckmarkOutline /> : <IoClose />}</div><label>must contain one symbol</label></div>
                 </div>
                 <div className="input-container">
-                    <input onChange={handleChange} type={hidePass ? "password" : "text"} name="rePassword"autoComplete="off" placeholder="Confirme password.." />
-                    <div onClick={() => SetHidePass(!hidePass)} className="icon">{hidePass ? <IoEyeOffOutline /> : <IoEyeOutline />}</div>
+                    <input className="password-input" onChange={handleChange} required type={hidePass ? "password" : "text"} name="rePassword" autoComplete="off" placeholder="Confirme password.." />
+                    <div onClick={() => SetHidePass(!hidePass)} className="icon noselect">{hidePass ? <IoEyeOffOutline /> : <IoEyeOutline />}</div>
                 </div>
                 <button className="btn1">Sign up</button>
             </form>

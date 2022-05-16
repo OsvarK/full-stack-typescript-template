@@ -25,11 +25,28 @@ input {
     box-sizing: border-box;
     background-color: #f1f5fb;
     padding-left: 15px;
+    border-radius: var(--border-radius);
+}
+
+.alert-container {
+    background-color: rgb(255, 93, 93);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    color: #fff;
+}
+
+.alert-container > p {
+    font-size: 13px;
 }
 
 .input-container {
     display: flex;
     margin: 10px 0;
+}
+
+.input-container > .password-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .input-container > .icon {
@@ -40,6 +57,8 @@ input {
     font-size: 22px;
     color: #bcbecb;
     cursor: pointer;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 .password-hint-container {
