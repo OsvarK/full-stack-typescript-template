@@ -59,7 +59,7 @@ const loginUser = async (req: Request, res: Response) => {
         return res.sendStatus(200);
     }
 
-    return res.status(401).json({error: 'Credentials is not valid!'});
+    return res.status(401).json('Credentials is not valid!');
 }
 
 
@@ -92,7 +92,6 @@ const createAccount = async (req: Request, res: Response) => {
 
     model.save((err: any, doc: IAccount) => {
         if (err !== null) {
-            console.log(err)
             if (err.code === 11000) return res.status(422).json('Email already exist');
             res.status(422).json(`Error creating account: (Mongoose err: ${err.code}):`);
         }

@@ -31,8 +31,8 @@ const LoginPage = () => {
             input.password,
             (res: Response) => {
                 if (res.ok) return navigate("/p");
-                res.json().then(data => {
-                    SetAlert(data);
+                res.json().then(msg => {
+                    SetAlert(msg);
                 });
             }
         );
