@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { IoEyeOutline, IoEyeOffOutline, IoCheckmarkOutline, IoClose } from "react-icons/io5";
 import ThirdPartyLogin from "../../components/thirdPartyLogin.cmpt";
@@ -7,7 +6,6 @@ import { useAuth } from "../../contexts/authentication.context";
 import "./authenticate.css"
 
 const SignupPage = () => {
-    const navigate = useNavigate();
     const auth = useAuth();
     const [hidePass, SetHidePass] = useState(true);
     const [alert, SetAlert] = useState(null);
@@ -25,7 +23,7 @@ const SignupPage = () => {
         email: "",
         password: "",
         rePassword: "",
-    })
+    });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -76,7 +74,7 @@ const SignupPage = () => {
             input.lastName,
             input.password,
             (res: Response) => {
-                if (res.ok) return navigate("/p");
+                if (res.ok) return window.location.href='/p';
                 res.json().then(msg => {
                     SetAlert(msg);
                 });

@@ -135,7 +135,7 @@ const verifyUser = async (req: Request, res: Response) => {
             if (err) return res.status(422).json({error: 'The ID may not be valid!'});
             return res.status(200).json(user)
         });
-    } catch (ex) { res.sendStatus(400) }
+    } catch (ex) { console.log(ex); res.sendStatus(400); }
 }
 
 /** Verify email */

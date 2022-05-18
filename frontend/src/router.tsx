@@ -15,7 +15,7 @@ const Router = () => {
 
                     {/* Private Routes */}
                     <Route path="/p" element={<PrivateRouteWrapper redirectTo='/login' />}>
-                        <Route path="profile" element={<ProfilePage />} />
+                        <Route index element={<ProfilePage />} />
                     </Route>
 
                     {/* Restricted for authenticated users */}

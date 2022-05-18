@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import ThirdPartyLogin from "../../components/thirdPartyLogin.cmpt";
 import { useAuth } from "../../contexts/authentication.context";
@@ -8,7 +7,6 @@ import "./authenticate.css"
 
 const LoginPage = () => {
     const auth = useAuth();
-    const navigate = useNavigate();
     const [alert, SetAlert] = useState(null);
     const [hidePass, SetHidePass] = useState(true);
     const [input, SetInput] = useState({
@@ -30,7 +28,7 @@ const LoginPage = () => {
             input.email,
             input.password,
             (res: Response) => {
-                if (res.ok) return navigate("/p");
+                if (res.ok) return window.location.href='/p';
                 res.json().then(msg => {
                     SetAlert(msg);
                 });
