@@ -37,7 +37,7 @@ const LoginPage = () => {
     }
 
     return (
-        <div className="form-container">
+        <div className="form-container uk-container">
             <div><h1>Welcome Back</h1></div>
             {alert !== null ?
             <div className="alert-container">

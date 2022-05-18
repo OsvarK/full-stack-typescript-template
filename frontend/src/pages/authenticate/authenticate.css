@@ -15,19 +15,6 @@ textarea:focus, input:focus{
     outline: none;
 }
 
-input {
-    display: block;
-    border: none;
-    text-decoration: none;
-    width: 100%;
-    height: 50px;
-    font-size: 13px;
-    box-sizing: border-box;
-    background-color: #f1f5fb;
-    padding-left: 15px;
-    border-radius: var(--border-radius);
-}
-
 .alert-container {
     background-color: rgb(255, 93, 93);
     padding: 10px;
@@ -45,20 +32,26 @@ input {
 }
 
 .input-container > .password-input {
+    justify-content: center;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-.input-container > .icon {
+.icon {
     background-color: #f1f5fb;
-    font-size: 20px;
-    padding: 0 15px;
-    padding-top: 14px;
+    height: 50px;
+    width: 50px;
+    align-self: center;
     font-size: 22px;
     color: #bcbecb;
     cursor: pointer;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    text-align: center;
+}
+
+.icon > svg {
+    margin-top: 15px;
 }
 
 .password-hint-container {
@@ -90,11 +83,7 @@ input {
 }
 
 .form-container {
-    position: absolute;
-    margin: auto;
-    top: 15%;
     background-color: #fff;
-    width: 350px;
     padding: 25px;
     padding-top: 15px;
 }
@@ -119,7 +108,13 @@ input {
 }
 
 .hr-or > div{
+    justify-self: center;
+    justify-content: center;
     width: 100%;
+}
+
+hr {
+    margin-top: 8px;
 }
 
 .hr-or > div:nth-child(2){

@@ -83,7 +83,7 @@ const SignupPage = () => {
     }
 
     return (
-        <div className="form-container">
+        <div className="form-container uk-container">
             <div><h1>Create your Account</h1></div>
             {alert !== null ?
             <div className="alert-container">
