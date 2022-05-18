@@ -4,5 +4,5 @@ import { useAuth } from "../contexts/authentication.context"
 
 export const PrivateRouteWrapper = ({restricted = false, redirectTo}) => {
   const auth = useAuth();
-  return ((auth.user !== null) === restricted) ? <Navigate to={redirectTo} /> : <Outlet />;
+  return ((auth.methods.getUserData() !== null) === restricted) ? <Navigate to={redirectTo} /> : <Outlet />;
 };

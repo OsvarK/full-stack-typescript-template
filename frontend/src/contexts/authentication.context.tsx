@@ -6,39 +6,55 @@ export interface MethodCallBack {
 }
 
 export interface userData {
-
+    accountType: string
+    createdAt: string
+    email: string
+    emailVerified: Boolean
+    firstName: string
+    isAdmin: Boolean
+    lastName: string
+    updatedAt: string
+    __v: Number
+    _id: string
 }
 
 /** Defines the AuthenticationContext */
 export interface IAuthenticationContext {
     children?: any,
     methods: {
-        verify: (Callback: MethodCallBack) => void,
+        getUserData: () => userData;
         logout: (callback: MethodCallBack) => void,
         login: (email: string, password: string, callback: MethodCallBack) => void,
-        loginUsingGoogle: (googleToken:string, callback: MethodCallBack) => void,
+        loginUsingGoogle: (googleToken: string, callback: MethodCallBack) => void,
         signup: (email: string, firstname: string, lastname: string, password: string, callback: MethodCallBack) => void
-    },
-    user: userData | null
-}
-
-/** Default properties for the AuthenticationContext */
-export const AuthContextdefaultProperties = {
-    methods: {
-        login: () => null,
-        logout: () => null,
-        signup: () => null,
-        verify: () => null,
-        loginUsingGoogle: () => null
-    },
-    user: null
+    }
 }
 
 // Creates the context and defines defualt values
-const AuthenticationContext = createContext<IAuthenticationContext>(AuthContextdefaultProperties);
+const AuthenticationContext = createContext<IAuthenticationContext>({methods: {
+    login: () => null,
+    logout: () => null,
+    signup: () => null,
+    loginUsingGoogle: () => null,
+    getUserData: () => ({} as any) as userData
+}});
 
 /** Defines the AuthenticationProvider and its methods */
 export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) => {
+
+    useEffect(()=>{
+        var success = false;
+        fetch('/api/auth/verify')
+        .then(res => {
+            if (res.status === 504) console.log('Unable to reach the backend, ' + res.statusText);
+            success = res.ok;
+            return res.json()
+        })
+        .then(data => {
+            if(success) SetUser(data);
+            else SetUser(null);
+        });
+    },[]);
 
     const [user, SetUser] = useLocalStorage("userData");
 
@@ -52,7 +68,6 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
         }).then((res: Response) => callback(res));
     }
 
-
     /** Login the user using email and password */
     const login = (email: string, password: string, callback: MethodCallBack) => {
         fetch('/api/auth/login',
@@ -65,7 +80,6 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
             })
         }).then((res: Response) => callback(res));
     };
-
 
     /** Signup a user */
     const signup = (email: string, firstname: string, lastname: string, password: string, callback: MethodCallBack) => {
@@ -82,7 +96,6 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
         }).then((res: Response) => callback(res));
     };
 
-
     /** Logout the authenticated user */
     const logout = (callback: MethodCallBack) => {
         fetch('/api/auth/logout')
@@ -92,22 +105,6 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
         });
     };
 
-    /** Verify Authentication */
-    const verify = (callback: MethodCallBack) => {
-        var success = false;
-        fetch('/api/auth/verify')
-        .then(res => {
-            if (res.status === 504) console.log('Unable to reach the backend, ' + res.statusText);
-            success = res.ok;
-            callback(res);
-            return res.json()
-        })
-        .then(data => {
-            if(success) SetUser(data);
-            else SetUser(null);
-        });
-    }
-
     return (
         <AuthenticationContext.Provider value={{
             methods: {
@@ -115,9 +112,8 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
                 logout,
                 signup,
                 loginUsingGoogle,
-                verify
-            },
-            user
+                getUserData: () => user as userData
+            }
         }}>
             {children}
         </AuthenticationContext.Provider>

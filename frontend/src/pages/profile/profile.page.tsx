@@ -1,12 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
+import { useAuth } from "../../contexts/authentication.context";
 
 const ProfilePage = () => {
 
+    const auth = useAuth();
+
+    useEffect(() => {
+        
+    }, []);
+
     const [input, SetInput] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
+        firstName: auth.methods.getUserData().firstName,
+        lastName: auth.methods.getUserData().lastName,
+        email: auth.methods.getUserData().email,
         password: "",
         rePassword: "",
     });
@@ -24,6 +31,7 @@ const ProfilePage = () => {
                 <div className="input-container">
                     <input
                         onChange={handleChange}
+                        value={input.firstName}
                         type="text"
                         name="firstName"
                         placeholder="First name.." 
@@ -32,6 +40,7 @@ const ProfilePage = () => {
                 <div className="input-container">
                     <input
                         onChange={handleChange}
+                        value={input.lastName}
                         type="text"
                         name="lastName"
                         placeholder="Last name.."
@@ -42,6 +51,7 @@ const ProfilePage = () => {
                 <div className="input-container">
                     <input
                         onChange={handleChange}
+                        value={input.email}
                         type="email"
                         name="email"
                         placeholder="Email.."

@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "frontend": "webpack-dev-server --config frontend/webpack.config.js --open",
     "build-frontend": "webpack --mode production --config frontend/webpack.config.js",
-    "backend": "ts-node ./backend/index.ts"
+    "backend": "ts-node ./backend/index.ts",
+    "start": "npm run build-frontend && npm run backend"
   },
   "author": "Oscar Karlsson",
   "license": "MIT",

@@ -128,14 +128,14 @@ const getAllAccounts = async (req: Request, res: Response) => {
 
 /** Verifies the token and return the user data */
 const verifyUser = async (req: Request, res: Response) => {
-    const token = req.cookies[envConfig.names.authCookie];
     try {
+        const token = req.cookies[envConfig.names.authCookie];
         const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
         accountModel.findById(decoded._id, (err: CallbackError, user: IAccount) => {
             if (err) return res.status(422).json({error: 'The ID may not be valid!'});
             return res.status(200).json(user)
         });
-    } catch (ex) { console.log(ex); res.sendStatus(400); }
+    } catch (ex) { res.sendStatus(400); }
 }
 
 /** Verify email */
