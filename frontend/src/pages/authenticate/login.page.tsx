@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import ThirdPartyLogin from "../../components/thirdPartyLogin.cmpt";
+import ThirdPartyLogin from "./components/thirdPartyLogin.cmpt";
 import { useAuth } from "../../contexts/authentication.context";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import "./authenticate.css"

@@ -15,11 +15,53 @@ textarea:focus, input:focus{
     outline: none;
 }
 
+.uk-container {
+    margin-top: 150px;
+    max-width: 350px;
+}
+
 .alert-container {
     background-color: rgb(255, 93, 93);
     padding: 10px;
     border-radius: var(--border-radius);
     color: #fff;
+}
+
+
+
+.profile-menu-container {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-menu-container > li {
+    cursor: pointer;
+    font-size: 13px;
+    padding: 15px;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+    border-end-end-radius: 0;
+    border-end-start-radius: 0;
+    margin-left: 0;
+    padding-left: 5px;
+}
+
+.profile-menu-container > li:hover {
+    color: #000;
+}
+
+
+.profile-input-container{
+    margin: 10px 0;
+}
+
+.profile-input-container > label{
+    margin-left: 10px;
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 5px;
 }
 
 .alert-container > p {
@@ -73,6 +115,11 @@ textarea:focus, input:focus{
     margin-left: 5px;
 }
 
+.form-container {
+    background-color: #fff;
+    padding: 25px;
+    padding-top: 30px;
+}
 
 .input-container > .icon:hover {
     color: #9c9eaa;
@@ -80,17 +127,24 @@ textarea:focus, input:focus{
 
 .btn1 {
     margin-top: 15px;
+    background-color: var(--main);
 }
 
-.form-container {
-    background-color: #fff;
-    padding: 25px;
-    padding-top: 15px;
+.btn1:hover {
+    background-color: var(--main-hover);
+}
+
+.btn2 {
+    background-color: rgb(219, 72, 72);
+}
+
+.btn2:hover {
+    background-color: rgb(228, 79, 79);
 }
 
 .form-container > div:first-child{
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 .third-party-container {

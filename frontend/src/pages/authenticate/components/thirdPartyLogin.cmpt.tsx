@@ -1,5 +1,5 @@
 import { GoogleLogin } from '@react-oauth/google';
-import { useAuth } from '../contexts/authentication.context';
+import { useAuth } from '../../../contexts/authentication.context';
 
 const Google = () => {
     const auth = useAuth();
