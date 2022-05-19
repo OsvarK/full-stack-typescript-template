@@ -66,14 +66,7 @@ const loginUser = async (req: Request, res: Response) => {
 /** Create a new account as a normal email user */
 const createAccount = async (req: Request, res: Response) => {
 
-    const errorStr =
-        'A user requires a firstName (3-25 chars), ' +
-        'lastName (3-25 chars), email (3-50 chars) ' +
-        'and a password. ' +
-        'The Password has to have a minimum of eight characters, ' +
-        'at least one uppercase letter, one lowercase letter, ' +
-        'one number and one special character!'
-    ;
+    const errorStr = 'Password does not meet password requirements';
 
     if (!validatePassword(req.body.password)) return res.status(422).json(errorStr);
     const hashedPassword = hash(req.body.password, envConfig.secrets.passwordHash);
