@@ -232,3 +232,9 @@ color: #bcbecb;
 ::-ms-input-placeholder { /* Microsoft Edge */
 color: #bcbecb;
 }
+
+@media screen and (max-width: 700px) {
+    .auth-root-container {
+        margin-top: 50px;
+    }
+}
