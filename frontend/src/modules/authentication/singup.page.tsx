@@ -2,7 +2,6 @@ import "./authentication.css";
 import { Link } from "react-router-dom";
 import ThirdPartyLogin from "./components/thirdPartyLogin.cmpt";
 import React, { FC, useState } from "react";
-import PasswordInput from "./components/passwordInput.cmpt";
 import { useAuth } from "../../contexts/authentication.context";
 import CreatePassword from "./components/createPassword.cmpt";
 
