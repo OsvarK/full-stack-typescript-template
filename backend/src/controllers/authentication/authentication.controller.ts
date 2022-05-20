@@ -86,7 +86,7 @@ const createAccount = async (req: Request, res: Response) => {
     model.save((err: any, doc: IAccount) => {
         if (err !== null) {
             if (err.code === 11000) return res.status(422).json('Email already exist');
-            res.status(422).json(`Error creating account: (Mongoose err: ${err.code}):`);
+            else return res.status(422).json(`Error creating account: ${err.code}`);
         }
 
         setAccountLoggedIn(res, (doc._id as string));
@@ -96,11 +96,51 @@ const createAccount = async (req: Request, res: Response) => {
 };
 
 
+/** Update account information */
+const updateAccount = async (req: Request, res: Response) => {
+
+    const token = req.cookies[envConfig.names.authCookie];
+    const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
+    const password = hash(req.body.password, envConfig.secrets.passwordHash);
+    const account = await accountModel.findById(decoded._id);
+
+    if (account !== null && account.hashedPassword === password) {
+        try {
+
+            const update = {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+            };
+
+            accountModel.findByIdAndUpdate(account._id, update, (err: any, user: IAccount) => {
+                if (err !== null) {
+                    if (err.code === 11000) return res.status(422).json('Email already exist');
+                    return res.status(422).json(`Error creating account: (Mongoose err: ${err.code}):`);
+                }
+                return res.status(200).json('Account has been updated!');
+            });
+
+        } catch (ex) { return res.sendStatus(400); }
+    } else {
+        return res.status(401).json('Credentials is not valid!');
+    }
+};
+
+
 /** Delete account by id */
 const deleteAccount = async (req: Request, res: Response) => {
-    await accountModel.findByIdAndDelete(req.params.id)
-    return res.sendStatus(200);
-}
+    try {
+        const token = req.cookies[envConfig.names.authCookie];
+        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
+        const password = hash(req.body.password, envConfig.secrets.passwordHash);
+        const account = await accountModel.findOneAndDelete({_id: decoded._id, hashedPassword: password});
+    
+        if (account !== null) return res.sendStatus(200);
+    
+        return res.status(401).json('Credentials is not valid!');
+    } catch (ex) { return res.sendStatus(400); }
+};
 
 
 /** Logout the user */
@@ -125,7 +165,7 @@ const verifyUser = async (req: Request, res: Response) => {
         const token = req.cookies[envConfig.names.authCookie];
         const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
         accountModel.findById(decoded._id, (err: CallbackError, user: IAccount) => {
-            if (err) return res.status(422).json({error: 'The ID may not be valid!'});
+            if (err) return res.status(422).json('The ID may not be valid!');
             return res.status(200).json(user)
         });
     } catch (ex) { res.sendStatus(400); }
@@ -193,7 +233,8 @@ const controller = {
     logoutUser,
     loginUser,
     verifyUser,
-    verifyEmail
+    verifyEmail,
+    updateAccount
 };
 
 export default controller;

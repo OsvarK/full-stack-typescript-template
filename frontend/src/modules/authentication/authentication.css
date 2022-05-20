@@ -221,7 +221,7 @@ textarea:focus, input:focus{
 }
 
 ::placeholder {
-    color: #bcbecb;
+    color: #bccbbe;
     opacity: 1; /* Firefox */
 }
 

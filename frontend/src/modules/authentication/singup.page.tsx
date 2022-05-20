@@ -4,11 +4,18 @@ import ThirdPartyLogin from "./components/thirdPartyLogin.cmpt";
 import React, { FC, useState } from "react";
 import { useAuth } from "../../contexts/authentication.context";
 import CreatePassword from "./components/createPassword.cmpt";
+import Alert, { IAlert } from "./components/alert.cmpt";
 
 const SignupPage: FC = () => {
 
     const auth = useAuth();
-    const [alert, SetAlert] = useState<string | null>(null);
+
+    const [alert, SetAlert] = useState<IAlert>({
+        show: false,
+        ok: false,
+        msg: ''
+    });
+
     const [input, SetInput] = useState({
         firstName: "",
         lastName: "",
@@ -28,7 +35,11 @@ const SignupPage: FC = () => {
         e.preventDefault();
 
         if (input.password !== input.rePassword) {
-            SetAlert("Passwords don't match");
+            SetAlert({
+                show: true,
+                ok: false,
+                msg: "Passwords don't match"
+            });
             return;
         }
 
@@ -40,7 +51,11 @@ const SignupPage: FC = () => {
             (res: Response) => {
                 if (res.ok) return window.location.href='/p';
                 res.json().then(msg => {
-                    SetAlert(msg);
+                    SetAlert({
+                        show: true,
+                        ok: false,
+                        msg: msg
+                    });
                 });
             }
         );
@@ -50,13 +65,12 @@ const SignupPage: FC = () => {
         <div className="auth-root-container">
             <div className="auth-container">
                 <h1>Welcome</h1>
-                <p className="auth-tooltop">Create an account to continue</p>
-                {alert !== null ? <p className="auth-alert">{alert}</p> : null }
+                <Alert show={alert.show} ok={alert.ok} msg={alert.msg} />
                 <form onSubmit={handleSubmit}>
                     <input
                         className="auth-input"
                         onChange={handleChange}
-                        name="firstname"
+                        name="firstName"
                         required
                         placeholder="First name.."
                     />

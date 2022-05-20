@@ -24,6 +24,8 @@ export interface userData {
 
 /** Defines the AuthenticationContext */
 interface IAuthenticationContext {
+    deleteAccount: (password: string, callback: MethodCallBack) => void,
+    updateAccount: (password: string, callback: MethodCallBack, email?: string, firstname?: string, lastname?: string) => void
     getUserData: () => userData;
     logout: (callback: MethodCallBack) => void,
     login: (email: string, password: string, callback: MethodCallBack) => void,
@@ -35,6 +37,8 @@ interface IAuthenticationContext {
 
 /** Initiate the context */
 const AuthenticationContext = createContext<IAuthenticationContext>({
+    updateAccount: () => null,
+    deleteAccount: () => null,
     login: () => null,
     logout: () => null,
     signup: () => null,
@@ -51,10 +55,16 @@ export const AuthenticationProvider: FC<{children: React.ReactElement}> = ({chil
     const [user, SetUser] = useLocalStorage("userData");
 
     // On component load, verify the authentication
-    useEffect(()=>{
+    useEffect(() => fetchUser(() => null), []);
+
+
+    /** Verify/Fetches the users data */
+    const fetchUser = (callback: () => void) => {
         var success = false;
+        var resp: Response;
         fetch('/api/auth/verify')
         .then(res => {
+            resp = res;
             if (res.status === 504) console.log('Unable to reach the backend, ' + res.statusText);
             success = res.ok;
             return res.json()
@@ -62,8 +72,9 @@ export const AuthenticationProvider: FC<{children: React.ReactElement}> = ({chil
         .then(data => {
             if(success) SetUser(data);
             else SetUser(null);
+            callback();
         });
-    },[]);
+    }
 
 
     /** Login the user using google credentials */
@@ -117,12 +128,45 @@ export const AuthenticationProvider: FC<{children: React.ReactElement}> = ({chil
     };
 
 
+    /** Update account information */
+    const updateAccount = (password: string, callback: MethodCallBack, email: string = user.email, firstname: string = user.firstName, lastname: string = user.lastName) => {
+        fetch('/api/auth/update',
+        {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                "firstName": firstname,
+                "lastName": lastname,
+                "email": email,
+                "password": password
+            })
+        }).then((res: Response) => {
+            fetchUser(() => callback(res));
+        });
+    };
+
+
+    /** Delete account */
+    const deleteAccount = (password: string, callback: MethodCallBack) => {
+        fetch('/api/auth/delete/' + password,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                "password": password
+            })
+        }).then((res: Response) => callback(res));
+    }
+
+
     /** Data that is being passed down the context */
     const value = {
         login,
         logout,
         signup,
+        deleteAccount,
         loginUsingGoogle,
+        updateAccount,
         getUserData: () => user as userData
     }
 

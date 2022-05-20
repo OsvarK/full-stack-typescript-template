@@ -3,8 +3,7 @@ import { useAuth } from "../../contexts/authentication.context";
 import ProfileDataPanel from "./components/profileDataPanel.cmpt";
 import ProfilePasswordPanel from "./components/profilePasswordPanel.cmpt";
 import ProfileSettingsPanel from "./components/profileSettingsPanel.cmpt";
-import { FC, useEffect, useState } from "react";
-import useLocalStorage from "../../utils/localStorage.utils";
+import { FC, useState } from "react";
 
 
 const ProfilePage: FC = () => {

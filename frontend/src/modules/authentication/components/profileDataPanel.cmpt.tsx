@@ -2,11 +2,17 @@ import "./../authentication.css";
 import React, { FC, useState } from "react";
 import PasswordInput from "./passwordInput.cmpt";
 import { useAuth } from "../../../contexts/authentication.context";
+import Alert, { IAlert } from "./alert.cmpt";
 
 const ProfileDataPanel: FC = () => {
 
     const auth = useAuth();
-    const [alert, SetAlert] = useState<string | null>(null);
+
+    const [alert, SetAlert] = useState<IAlert>({
+        show: false,
+        ok: false,
+        msg: ''
+    });
 
     const [input, SetInput] = useState({
         firstName: auth.getUserData().firstName,
@@ -31,21 +37,37 @@ const ProfileDataPanel: FC = () => {
             input.email === auth.getUserData().email
         ) return;
 
-        console.log("Not implemented, change user info");
-        console.log(input);
+        auth.updateAccount(
+            input.currentPassword,
+            (res: Response) => {
+                res.json().then(msg => {
+                    SetAlert({
+                        show: true,
+                        ok: res.ok,
+                        msg: msg
+                    });
+                });
+            },
+            input.email,
+            input.firstName,
+            input.lastName,
+        );
     };
+
+
 
     return (
         <div className="auth-container">
         <h1>Account Data</h1>
         <p className="auth-tooltop">{auth.getUserData().firstName} {auth.getUserData().lastName}</p>
-        {alert !== null ? <p className="auth-alert">{alert}</p> : null }
+        <Alert show={alert.show} ok={alert.ok} msg={alert.msg} />
         <form autoComplete="off" onSubmit={handleSubmit}>
             <p className="auth-input-label">First name</p>
             <input
                 value={input.firstName}
                 className="auth-input"
                 onChange={handleChange}
+                type="text"
                 name="firstName"
                 required
                 placeholder="First name.."
@@ -55,6 +77,7 @@ const ProfileDataPanel: FC = () => {
                 value={input.lastName}
                 className="auth-input"
                 onChange={handleChange}
+                type="text"
                 name="lastName"
                 required
                 placeholder="Last name.."
@@ -64,6 +87,7 @@ const ProfileDataPanel: FC = () => {
                 disabled={auth.getUserData().accountType !== "Normal"}
                 value={input.email}
                 className="auth-input"
+                type="email"
                 onChange={handleChange}
                 name="email"
                 required

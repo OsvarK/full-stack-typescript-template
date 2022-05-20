@@ -4,11 +4,18 @@ import ThirdPartyLogin from "./components/thirdPartyLogin.cmpt";
 import React, { FC, useState } from "react";
 import PasswordInput from "./components/passwordInput.cmpt";
 import { useAuth } from "../../contexts/authentication.context";
+import Alert, { IAlert } from "./components/alert.cmpt";
 
 const LoginPage: FC = () => {
 
     const auth = useAuth();
-    const [alert, SetAlert] = useState(null);
+
+    const [alert, SetAlert] = useState<IAlert>({
+        show: false,
+        ok: false,
+        msg: ''
+    });
+
     const [input, SetInput] = useState({
         email: "",
         password: "",
@@ -29,7 +36,11 @@ const LoginPage: FC = () => {
             (res: Response) => {
                 if (res.ok) return window.location.href='/p';
                 res.json().then(msg => {
-                    SetAlert(msg);
+                    SetAlert({
+                        show: true,
+                        ok: false,
+                        msg: msg
+                    });
                 });
             }
         );
@@ -40,7 +51,7 @@ const LoginPage: FC = () => {
             <div className="auth-container">
                 <h1>Welcome Back</h1>
                 <p className="auth-tooltop">Login to access your account</p>
-                {alert !== null ? <p className="auth-alert">{alert}</p> : null }
+                <Alert show={alert.show} ok={alert.ok} msg={alert.msg} />
                 <form onSubmit={handleSubmit}>
                     <input
                         className="auth-input"

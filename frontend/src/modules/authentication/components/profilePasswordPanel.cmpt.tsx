@@ -3,11 +3,17 @@ import React, { FC, useState } from "react";
 import { useAuth } from "../../../contexts/authentication.context";
 import CreatePassword from "./createPassword.cmpt";
 import PasswordInput from "./passwordInput.cmpt";
+import Alert, { IAlert } from "./alert.cmpt";
 
 const ProfilePasswordPanel: FC = () => {
 
     const auth = useAuth();
-    const [alert, SetAlert] = useState<string | null>(null);
+
+    const [alert, SetAlert] = useState<IAlert>({
+        show: false,
+        ok: false,
+        msg: ''
+    });
 
     const [input, SetInput] = useState({
         newPassword: "",
@@ -26,7 +32,11 @@ const ProfilePasswordPanel: FC = () => {
         e.preventDefault();
 
         if (input.newPassword !== input.newRePassword) {
-            SetAlert("Passwords don't match");
+            SetAlert({
+                show: true,
+                ok: false,
+                msg: "Passwords don't match"
+            });
             return;
         }
 
@@ -38,7 +48,7 @@ const ProfilePasswordPanel: FC = () => {
         <div className="auth-container">
         <h1>Update Password</h1>
         <p className="auth-tooltop">{auth.getUserData().firstName} {auth.getUserData().lastName}</p>
-        {alert !== null ? <p className="auth-alert">{alert}</p> : null }
+        <Alert show={alert.show} ok={alert.ok} msg={alert.msg} />
         <form autoComplete="off" onSubmit={handleSubmit}>
             <CreatePassword
                 passwordName="newPassword"
