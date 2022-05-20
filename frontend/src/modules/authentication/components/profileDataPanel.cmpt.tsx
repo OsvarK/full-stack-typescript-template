@@ -16,9 +16,7 @@ const ProfileDataPanel: FC = () => {
 
     const [input, SetInput] = useState({
         firstName: auth.getUserData().firstName,
-        lastName: auth.getUserData().lastName,
-        email: auth.getUserData().email,
-        currentPassword: ""
+        lastName: auth.getUserData().lastName
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,12 +31,10 @@ const ProfileDataPanel: FC = () => {
 
         if (
             input.firstName === auth.getUserData().firstName &&
-            input.lastName === auth.getUserData().lastName &&
-            input.email === auth.getUserData().email
+            input.lastName === auth.getUserData().lastName
         ) return;
 
-        auth.updateAccount(
-            input.currentPassword,
+        auth.updateAccountInfo(
             (res: Response) => {
                 res.json().then(msg => {
                     SetAlert({
@@ -48,9 +44,8 @@ const ProfileDataPanel: FC = () => {
                     });
                 });
             },
-            input.email,
             input.firstName,
-            input.lastName,
+            input.lastName
         );
     };
 
@@ -81,24 +76,6 @@ const ProfileDataPanel: FC = () => {
                 name="lastName"
                 required
                 placeholder="Last name.."
-            />
-            <p className="auth-input-label">Email</p>
-            <input
-                disabled={auth.getUserData().accountType !== "Normal"}
-                value={input.email}
-                className="auth-input"
-                type="email"
-                onChange={handleChange}
-                name="email"
-                required
-                placeholder="Email.."
-            />
-            <p className="auth-input-label">Your current password</p>
-            <PasswordInput
-                name="currentPassword"
-                autoComplete="off"
-                placeholder="Current password.."
-                onChange={handleChange}
             />
             <button className="auth-btn auth-btn-main" >Update account information</button>
         </form>

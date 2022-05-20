@@ -1,7 +1,6 @@
 import "./../authentication.css";
 import { FC, useState } from "react";
 import { useAuth } from "../../../contexts/authentication.context";
-import PasswordInput from "./passwordInput.cmpt";
 import Alert, { IAlert } from "./alert.cmpt";
 
 const ProfileSettingsPanel: FC = () => {
@@ -12,17 +11,6 @@ const ProfileSettingsPanel: FC = () => {
         ok: false,
         msg: ''
     });
-
-    const [input, SetInput] = useState({
-        password: "",
-    });
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        SetInput({
-          ...input,
-          [e.target.name]: e.target.value,
-        });
-    };
 
     const handleLogout = () => {
         auth.logout((res: Response) => {
@@ -38,16 +26,8 @@ const ProfileSettingsPanel: FC = () => {
     };
 
     const handleDeleteAccount = () => {
-        if (input.password.length < 1) {
-            SetAlert({
-                show: true,
-                ok: false,
-                msg: "Provide your password to delete this account"
-            });
-            return;
-        }
-        auth.deleteAccount(input.password,  (res: Response) => {
-            if (res.ok) return window.location.href='/';
+        auth.deleteAccount((res: Response) => {
+            if (res.ok) return window.location.href='/login';
             res.json().then(msg => {
                 SetAlert({
                     show: true,
@@ -66,7 +46,6 @@ const ProfileSettingsPanel: FC = () => {
         <div>
             <button onClick={handleLogout} className="auth-btn auth-btn-main">Logout</button>
             <button onClick={handleDeleteAccount} className="auth-btn auth-btn-main">Delete Account</button>
-            <PasswordInput name="password" autoComplete="off" placeholder="Password.." onChange={handleChange} />
         </div>
     </div>
     );

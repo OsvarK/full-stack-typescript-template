@@ -56,7 +56,8 @@ const accountSchema : Schema = new Schema({
     },
     isAdmin: {
         type: Boolean,
-        required: true
+        required: true,
+        default: false
     }
 }, { timestamps: true });
 

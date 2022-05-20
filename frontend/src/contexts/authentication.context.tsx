@@ -24,8 +24,9 @@ export interface userData {
 
 /** Defines the AuthenticationContext */
 interface IAuthenticationContext {
-    deleteAccount: (password: string, callback: MethodCallBack) => void,
-    updateAccount: (password: string, callback: MethodCallBack, email?: string, firstname?: string, lastname?: string) => void
+    updatePassword: (newPassword: string, currentPassword: string, callback: MethodCallBack) => void,
+    deleteAccount: (callback: MethodCallBack) => void,
+    updateAccountInfo: (callback: MethodCallBack, firstname?: string, lastname?: string) => void
     getUserData: () => userData;
     logout: (callback: MethodCallBack) => void,
     login: (email: string, password: string, callback: MethodCallBack) => void,
@@ -37,7 +38,8 @@ interface IAuthenticationContext {
 
 /** Initiate the context */
 const AuthenticationContext = createContext<IAuthenticationContext>({
-    updateAccount: () => null,
+    updatePassword: () => null,
+    updateAccountInfo: () => null,
     deleteAccount: () => null,
     login: () => null,
     logout: () => null,
@@ -129,32 +131,40 @@ export const AuthenticationProvider: FC<{children: React.ReactElement}> = ({chil
 
 
     /** Update account information */
-    const updateAccount = (password: string, callback: MethodCallBack, email: string = user.email, firstname: string = user.firstName, lastname: string = user.lastName) => {
-        fetch('/api/auth/update',
+    const updateAccountInfo = (callback: MethodCallBack, firstname: string = user.firstName, lastname: string = user.lastName) => {
+        fetch('/api/auth/update/info',
         {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 "firstName": firstname,
-                "lastName": lastname,
-                "email": email,
-                "password": password
+                "lastName": lastname
             })
         }).then((res: Response) => {
             fetchUser(() => callback(res));
         });
     };
 
-
-    /** Delete account */
-    const deleteAccount = (password: string, callback: MethodCallBack) => {
-        fetch('/api/auth/delete/' + password,
+    /** Update account password */
+    const updatePassword = (newPassword: string, currentPassword: string, callback: MethodCallBack) => {
+        fetch('/api/auth/update/password',
         {
-            method: 'POST',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                "password": password
+                "newPassword": newPassword,
+                "currentPassword": currentPassword
             })
+        }).then((res: Response) => {
+            fetchUser(() => callback(res));
+        });
+    };
+
+    /** Delete account */
+    const deleteAccount = (callback: MethodCallBack) => {
+        fetch('/api/auth',
+        {
+            method: 'DELETE',
         }).then((res: Response) => callback(res));
     }
 
@@ -166,7 +176,8 @@ export const AuthenticationProvider: FC<{children: React.ReactElement}> = ({chil
         signup,
         deleteAccount,
         loginUsingGoogle,
-        updateAccount,
+        updatePassword,
+        updateAccountInfo,
         getUserData: () => user as userData
     }
 

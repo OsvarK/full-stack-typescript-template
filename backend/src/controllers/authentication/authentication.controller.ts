@@ -32,10 +32,11 @@ const loginGoogle = async (req: Request, res: Response) => {
         const options = { upsert: true, new: true, setDefaultsOnInsert: true };
         const update = {
             accountType: AccountType.Google,
-            firstName: payload.given_name,
-            lastName: payload.family_name,
+            firstName: formateNames(payload.given_name),
+            lastName: formateNames(payload.family_name),
             email: payload.email,
-            emailVerified: payload.email_verified
+            emailVerified: payload.email_verified,
+            isAdmin: false
         };
 
         let createdAccount: any = await accountModel.findOneAndUpdate(query, update, options);
@@ -66,15 +67,13 @@ const loginUser = async (req: Request, res: Response) => {
 /** Create a new account as a normal email user */
 const createAccount = async (req: Request, res: Response) => {
 
-    const errorStr = 'Password does not meet password requirements';
-
-    if (!validatePassword(req.body.password)) return res.status(422).json(errorStr);
+    if (!validatePassword(req.body.password)) return res.status(422).json("Password does not meet the password requirements");
     const hashedPassword = hash(req.body.password, envConfig.secrets.passwordHash);
 
     const account : IAccount = {
         accountType: AccountType.Normal,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
+        firstName: formateNames(req.body.firstName),
+        lastName: formateNames(req.body.lastName),
         email: req.body.email,
         emailVerified: false,
         hashedPassword: hashedPassword,
@@ -97,34 +96,63 @@ const createAccount = async (req: Request, res: Response) => {
 
 
 /** Update account information */
-const updateAccount = async (req: Request, res: Response) => {
+const updateAccountInfo = async (req: Request, res: Response) => {
+    try {
+        const token = req.cookies[envConfig.names.authCookie];
+        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
+        const account = await accountModel.findById(decoded._id);
+        if (account !== null) {
+            try {
+                const update = {
+                    firstName: formateNames(req.body.firstName),
+                    lastName: formateNames(req.body.lastName)
+                };
+                accountModel.findByIdAndUpdate(account._id, update, (err: any) => {
+                    if (err !== null) return res.status(422).json(`Error updating account: (Mongoose err: ${err.code}):`);
+                    return res.status(200).json('Account has been updated!');
+                });
+            } catch (ex) { return res.sendStatus(400); }
+        } else return res.status(401).json('Account does not exist');
+    } catch (ex) { return res.sendStatus(400); }
+};
 
-    const token = req.cookies[envConfig.names.authCookie];
-    const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
-    const password = hash(req.body.password, envConfig.secrets.passwordHash);
-    const account = await accountModel.findById(decoded._id);
 
-    if (account !== null && account.hashedPassword === password) {
-        try {
+/** Change password */
+const updatePassword = async (req: Request, res: Response) => {
+    try {
+        const token = req.cookies[envConfig.names.authCookie];
+        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
+        const account = await accountModel.findById(decoded._id);
 
-            const update = {
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                email: req.body.email,
-            };
+        if (!validatePassword(req.body.newPassword)){
+            return res.status(422).json("Password does not meet the password requirements");
+        }
 
-            accountModel.findByIdAndUpdate(account._id, update, (err: any, user: IAccount) => {
-                if (err !== null) {
-                    if (err.code === 11000) return res.status(422).json('Email already exist');
-                    return res.status(422).json(`Error creating account: (Mongoose err: ${err.code}):`);
-                }
-                return res.status(200).json('Account has been updated!');
-            });
+        const newPassword = hash(req.body.newPassword, envConfig.secrets.passwordHash);
+        const currentPassword = hash(req.body.currentPassword, envConfig.secrets.passwordHash);
 
-        } catch (ex) { return res.sendStatus(400); }
-    } else {
-        return res.status(401).json('Credentials is not valid!');
-    }
+        if (account !== null) {
+            if (account.accountType !== AccountType.Normal){
+                return res.status(401).json("Third party account's does not have a password");
+            }
+
+            if (currentPassword !== account.hashedPassword){
+                return res.status(401).json("Credentials is not valid!");
+            }
+
+            if (newPassword === account.hashedPassword){
+                return res.status(401).json("You already have this password");
+            }
+
+            try {
+                const update = { hashedPassword:  newPassword};
+                accountModel.findByIdAndUpdate(account._id, update, (err: any) => {
+                    if (err !== null) return res.status(422).json(`Error updating account: (Mongoose err: ${err.code}):`);
+                    return res.status(200).json('Password has been updated!');
+                });
+            } catch (ex) { return res.sendStatus(400); }
+        } else return res.status(404).json('Account does not exist');
+    } catch (ex) { return res.sendStatus(400); }
 };
 
 
@@ -133,12 +161,9 @@ const deleteAccount = async (req: Request, res: Response) => {
     try {
         const token = req.cookies[envConfig.names.authCookie];
         const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
-        const password = hash(req.body.password, envConfig.secrets.passwordHash);
-        const account = await accountModel.findOneAndDelete({_id: decoded._id, hashedPassword: password});
-    
+        const account = await accountModel.findByIdAndDelete(decoded._id);
         if (account !== null) return res.sendStatus(200);
-    
-        return res.status(401).json('Credentials is not valid!');
+        return res.status(401).json('Account does not exist');
     } catch (ex) { return res.sendStatus(400); }
 };
 
@@ -219,22 +244,28 @@ const terminateAccountSession = (res: Response) => {
     res.clearCookie(envConfig.names.authCookie);
 }
 
+/** Format the names */
+const formateNames = (name: string) => {
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+}
+
 
 /** Exports all the admin controllers */
 export const adminController = {
     getAllAccounts,
-    deleteAccount
 }
 
 /** Exports all the default controllers */
 const controller = {
+    deleteAccount,
+    updatePassword,
     createAccount,
     loginGoogle,
     logoutUser,
     loginUser,
     verifyUser,
     verifyEmail,
-    updateAccount
+    updateAccountInfo
 };
 
 export default controller;

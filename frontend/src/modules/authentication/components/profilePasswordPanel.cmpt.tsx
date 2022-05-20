@@ -38,35 +38,57 @@ const ProfilePasswordPanel: FC = () => {
                 msg: "Passwords don't match"
             });
             return;
-        }
+        };
 
-        console.log("Not implemented, change user info");
-        console.log(input);
+        auth.updatePassword(
+            input.newPassword,
+            input.currentPassword,
+            (res: Response) => {
+                res.json().then(msg => {
+                    SetAlert({
+                        show: true,
+                        ok: res.ok,
+                        msg: msg
+                    });
+                });
+            },
+        );
     };
+
+
+    if (auth.getUserData().accountType !== "Normal") {
+        return (
+            <div className="auth-container">
+                <h1>{auth.getUserData().accountType}</h1>
+                <p className="auth-tooltop">accounts does not have a password</p>
+            </div>
+        );
+    };
+
 
     return (
         <div className="auth-container">
-        <h1>Update Password</h1>
-        <p className="auth-tooltop">{auth.getUserData().firstName} {auth.getUserData().lastName}</p>
-        <Alert show={alert.show} ok={alert.ok} msg={alert.msg} />
-        <form autoComplete="off" onSubmit={handleSubmit}>
-            <CreatePassword
-                passwordName="newPassword"
-                passwordPlaceholder="New password.."
-                confirmePasswordName="newRePassword"
-                confirmePasswordPlaceholder="Confirme new password.."
-                onChange={handleChange}
-            />
-            <p className="auth-input-label">Your current password</p>
-            <PasswordInput
-                name="currentPassword"
-                autoComplete="off"
-                placeholder="Current password.."
-                onChange={handleChange}
-            />
-            <button className="auth-btn auth-btn-main" >Update account information</button>
-        </form>
-    </div>
+            <h1>Update Password</h1>
+            <p className="auth-tooltop">{auth.getUserData().firstName} {auth.getUserData().lastName}</p>
+            <Alert show={alert.show} ok={alert.ok} msg={alert.msg} />
+            <form autoComplete="off" onSubmit={handleSubmit}>
+                <CreatePassword
+                    passwordName="newPassword"
+                    passwordPlaceholder="New password.."
+                    confirmePasswordName="newRePassword"
+                    confirmePasswordPlaceholder="Confirme new password.."
+                    onChange={handleChange}
+                />
+                <p className="auth-input-label">Your current password</p>
+                <PasswordInput
+                    name="currentPassword"
+                    autoComplete="off"
+                    placeholder="Current password.."
+                    onChange={handleChange}
+                />
+                <button className="auth-btn auth-btn-main" >Update account information</button>
+            </form>
+        </div>
     );
 };
 
