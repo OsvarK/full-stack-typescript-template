@@ -1,8 +1,8 @@
-import React from 'react';
+import { FC } from 'react';
 import { Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/authentication.context"
 
-export const PrivateRouteWrapper = ({restricted = false, redirectTo}) => {
+export const PrivateRouteWrapper: FC<{restricted?: boolean, redirectTo: string}> = ({restricted = false, redirectTo}) => {
   const auth = useAuth();
-  return ((auth.methods.getUserData() !== null) === restricted) ? <Navigate to={redirectTo} /> : <Outlet />;
+  return ((auth.getUserData() !== null) === restricted) ? <Navigate to={redirectTo} /> : <Outlet />;
 };

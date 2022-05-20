@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PrivateRouteWrapper } from "./utils/routes.util";
-import LoginPage from "./pages/authenticate/login.page";
-import SignupPage from "./pages/authenticate/signup.page";
-import ProfilePage from "./pages/authenticate/profile.page";
-import LandingPage from "./pages/landing/landing.page";
-import Page404 from "./pages/404/404.page";
+import SignupPage from "./modules/authentication/singup.page";
+import LoginPage from "./modules/authentication/login.page";
+import LandingPage from "./modules/landing/landing.page";
+import ProfilePage from "./modules/authentication/profile.page";
+import Page404 from "./modules/404/404.page";
+import { FC } from "react";
 
-const Router = () => {
+const Router: FC = () => {
     return (
         <BrowserRouter>
             <Routes>
@@ -19,11 +20,9 @@ const Router = () => {
                     </Route>
 
                     {/* Restricted for authenticated users */}
-                    <Route path="/login" element={<PrivateRouteWrapper restricted={true} redirectTo='/p' />}>
-                        <Route index element={<LoginPage />} />
-                    </Route>
-                    <Route path="/signup" element={<PrivateRouteWrapper restricted={true} redirectTo='/p' />}>
-                        <Route index element={<SignupPage />} />
+                    <Route path="/" element={<PrivateRouteWrapper restricted={true} redirectTo='/p' />}>
+                        <Route path="login" element={<LoginPage />} />
+                        <Route path="signup" element={<SignupPage />} />
                     </Route>
 
                     <Route path="*" element={<Page404 />} />

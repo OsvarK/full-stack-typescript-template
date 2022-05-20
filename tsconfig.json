@@ -16,6 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["frontend/**/*.ts", "backend/**/*.ts", "frontend/src/pages/authenticate/login.page.tsx", "frontend/src/pages/signup.page.tsx"],
+  "include": ["frontend/**/*.tsx", "backend/**/*.ts"],
   "exclude": ["node_modules", ".vscode"]
 }

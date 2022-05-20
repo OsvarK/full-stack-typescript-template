@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client';
+import { FC } from 'react';
 import Router from "./router";
 import "./index.css";
 
@@ -7,11 +8,11 @@ import { AuthenticationProvider} from './contexts/authentication.context';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 
-const App = () => {
+const App: FC = () => {
     return (
         <>
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                <AuthenticationProvider methods={null}>
+                <AuthenticationProvider>
                         <Router />
                 </AuthenticationProvider>
             </GoogleOAuthProvider>
@@ -19,5 +20,5 @@ const App = () => {
     )
 }
 
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById('root') as Element);
 root.render(<App />);

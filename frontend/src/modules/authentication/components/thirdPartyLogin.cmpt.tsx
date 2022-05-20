@@ -1,14 +1,15 @@
 import { GoogleLogin } from '@react-oauth/google';
+import { FC } from 'react';
 import { useAuth } from '../../../contexts/authentication.context';
 
-const Google = () => {
+const Google: FC = () => {
     const auth = useAuth();
 
     return (
         <GoogleLogin
             size='large'
             width='350px'
-            onSuccess={(res) => auth.methods.loginUsingGoogle(res.credential as string, () => {
+            onSuccess={(res) => auth.loginUsingGoogle(res.credential as string, () => {
                 window.location.href='/p';
             })}
             onError={() => {
@@ -18,7 +19,7 @@ const Google = () => {
     );
 }
 
-const ThirdPartyLogin = () => {
+const ThirdPartyLogin: FC = () => {
 
   return (
     <>

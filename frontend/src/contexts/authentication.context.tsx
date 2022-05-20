@@ -1,47 +1,56 @@
-import {createContext, useContext, FC, useEffect} from 'react';
+import React, {createContext, useContext, FC, useEffect} from 'react';
 import useLocalStorage from '../utils/localStorage.utils';
 
-export interface MethodCallBack {
-    (data: Response): void;
-}
+/** Authentication methods callback */
+interface MethodCallBack { (data: Response): void; };
 
+
+
+/** Defines a user */
 export interface userData {
     accountType: string
     createdAt: string
     email: string
-    emailVerified: Boolean
+    emailVerified: boolean
     firstName: string
-    isAdmin: Boolean
+    isAdmin: boolean
     lastName: string
     updatedAt: string
-    __v: Number
+    __v: number
     _id: string
-}
+};
+
+
 
 /** Defines the AuthenticationContext */
-export interface IAuthenticationContext {
-    children?: any,
-    methods: {
-        getUserData: () => userData;
-        logout: (callback: MethodCallBack) => void,
-        login: (email: string, password: string, callback: MethodCallBack) => void,
-        loginUsingGoogle: (googleToken: string, callback: MethodCallBack) => void,
-        signup: (email: string, firstname: string, lastname: string, password: string, callback: MethodCallBack) => void
-    }
-}
+interface IAuthenticationContext {
+    getUserData: () => userData;
+    logout: (callback: MethodCallBack) => void,
+    login: (email: string, password: string, callback: MethodCallBack) => void,
+    loginUsingGoogle: (googleToken: string, callback: MethodCallBack) => void,
+    signup: (email: string, firstname: string, lastname: string, password: string, callback: MethodCallBack) => void
+};
 
-// Creates the context and defines defualt values
-const AuthenticationContext = createContext<IAuthenticationContext>({methods: {
+
+
+/** Initiate the context */
+const AuthenticationContext = createContext<IAuthenticationContext>({
     login: () => null,
     logout: () => null,
     signup: () => null,
     loginUsingGoogle: () => null,
     getUserData: () => ({} as any) as userData
-}});
+});
 
-/** Defines the AuthenticationProvider and its methods */
-export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) => {
 
+
+/** Defines the custom AuthenticationProvider and its methods */
+export const AuthenticationProvider: FC<{children: React.ReactElement}> = ({children}) => {
+
+    // Stores the user information
+    const [user, SetUser] = useLocalStorage("userData");
+
+    // On component load, verify the authentication
     useEffect(()=>{
         var success = false;
         fetch('/api/auth/verify')
@@ -56,7 +65,6 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
         });
     },[]);
 
-    const [user, SetUser] = useLocalStorage("userData");
 
     /** Login the user using google credentials */
     const loginUsingGoogle = (googleToken: string, callback: MethodCallBack) => {
@@ -67,6 +75,7 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
             body: JSON.stringify({"googleToken": googleToken})
         }).then((res: Response) => callback(res));
     }
+
 
     /** Login the user using email and password */
     const login = (email: string, password: string, callback: MethodCallBack) => {
@@ -80,6 +89,7 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
             })
         }).then((res: Response) => callback(res));
     };
+
 
     /** Signup a user */
     const signup = (email: string, firstname: string, lastname: string, password: string, callback: MethodCallBack) => {
@@ -96,6 +106,7 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
         }).then((res: Response) => callback(res));
     };
 
+
     /** Logout the authenticated user */
     const logout = (callback: MethodCallBack) => {
         fetch('/api/auth/logout')
@@ -105,19 +116,22 @@ export const AuthenticationProvider: FC<IAuthenticationContext> = ({children}) =
         });
     };
 
+
+    /** Data that is being passed down the context */
+    const value = {
+        login,
+        logout,
+        signup,
+        loginUsingGoogle,
+        getUserData: () => user as userData
+    }
+
     return (
-        <AuthenticationContext.Provider value={{
-            methods: {
-                login,
-                logout,
-                signup,
-                loginUsingGoogle,
-                getUserData: () => user as userData
-            }
-        }}>
+        <AuthenticationContext.Provider value={value}>
             {children}
         </AuthenticationContext.Provider>
     );
 }
 
+/** Import this method to fetch the context in other components */
 export const useAuth = () => useContext<IAuthenticationContext>(AuthenticationContext);

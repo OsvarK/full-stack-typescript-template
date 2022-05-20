@@ -1,8 +1,15 @@
-import React, { useState } from "react";
-import { IoEyeOutline, IoEyeOffOutline, IoCheckmarkOutline, IoClose } from "react-icons/io5";
+import { FC, useState } from "react";
+import "./../authentication.css";
+import { IoCheckmarkOutline, IoClose } from "react-icons/io5";
+import PasswordInput from "./passwordInput.cmpt";
 
-const CreatePassword = ({input, SetInput}) => {
-    const [hidePass, SetHidePass] = useState(true);
+const CreatePassword: FC<{
+    passwordName: string,
+    confirmePasswordName: string,
+    passwordPlaceholder: string,
+    confirmePasswordPlaceholder: string,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    }> = (props) => {
 
     const [passValidation, SetPassValidation] = useState({
         lenght: false,
@@ -14,7 +21,7 @@ const CreatePassword = ({input, SetInput}) => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
-        if (e.target.name === "password") {
+        if (e.target.name === props.passwordName) {
 
             const symbol = new RegExp("(?=.*?[#?!@$%^&*-])");
             const number = new RegExp("(?=.*?[0-9])");
@@ -30,18 +37,17 @@ const CreatePassword = ({input, SetInput}) => {
             });
         }
 
-        SetInput({
-            ...input,
-            [e.target.name]: e.target.value,
-        });
+        props.onChange(e);
     }
 
     return (
         <div>
-            <div className="input-container">
-                <input className="password-input" onChange={handleChange} required type={hidePass ? "password" : "text"} name="password" placeholder="Password.." />
-                <div onClick={() => SetHidePass(!hidePass)} className="icon noselect">{hidePass ? <IoEyeOffOutline /> : <IoEyeOutline />}</div>
-            </div>
+            <PasswordInput
+                name={props.passwordName}
+                autoComplete="on"
+                placeholder={props.passwordPlaceholder}
+                onChange={handleChange}
+            />
             <div className="password-hint-container">
                 <div style={{color: passValidation.lowercase ? "black" : "#bcbecb"}}><div>{passValidation.lowercase ? <IoCheckmarkOutline /> : <IoClose />}</div><label>one uppercase</label></div>
                 <div style={{color: passValidation.uppercase ? "black" : "#bcbecb"}}><div>{passValidation.uppercase ? <IoCheckmarkOutline /> : <IoClose />}</div><label>one lowercase</label></div>
@@ -49,12 +55,14 @@ const CreatePassword = ({input, SetInput}) => {
                 <div style={{color: passValidation.number ? "black" : "#bcbecb"}}><div>{passValidation.number ? <IoCheckmarkOutline /> : <IoClose />}</div><label>must contain one number</label></div>
                 <div style={{color: passValidation.symbol ? "black" : "#bcbecb"}}><div>{passValidation.symbol ? <IoCheckmarkOutline /> : <IoClose />}</div><label>must contain one symbol</label></div>
             </div>
-            <div className="input-container">
-                <input className="password-input" onChange={handleChange} required type={hidePass ? "password" : "text"} name="rePassword" autoComplete="off" placeholder="Confirme password.." />
-                <div onClick={() => SetHidePass(!hidePass)} className="icon noselect">{hidePass ? <IoEyeOffOutline /> : <IoEyeOutline />}</div>
-            </div>
+            <PasswordInput
+                name={props.confirmePasswordName}
+                autoComplete="off"
+                placeholder={props.confirmePasswordPlaceholder}
+                onChange={handleChange}
+            />
         </div>
     );
-};
+}
 
 export default CreatePassword;

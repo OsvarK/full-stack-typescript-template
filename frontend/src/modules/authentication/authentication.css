@@ -1,0 +1,234 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto&display=swap');
+
+.auth-root-container {
+    margin-top: 150px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-root-container {
+    display: block;
+}
+
+.profile-menu-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-menu-container label{
+    margin: 15px;
+    opacity: 0.7;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.profile-menu-container label:hover{
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.auth-container {
+    width: 350px;
+    background-color: white;
+    padding: 16px;
+    border-radius: var(--border-radius);
+}
+
+.auth-alert {
+    display:flex;
+    width: 100%;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    background-color: rgb(255, 67, 67);
+    color: white;
+    font-size: 13px;
+    box-sizing: border-box;
+    padding: 16px;
+}
+
+.auth-container h1 {
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bolder;
+    font-size: 35px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 0;
+}
+
+.auth-tooltop {
+    text-align: center;
+    font-size: 14px;
+    padding: 0;
+    opacity: 0.5;
+    margin: 0;
+    margin-bottom: 20px;
+}
+
+.auth-input {
+    display: block;
+    border: none;
+    text-decoration: none;
+    width: 100%;
+    height: 50px;
+    font-size: 13px;
+    box-sizing: border-box;
+    background-color: #f1f5fb;
+    padding-left: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 10px;
+}
+
+.auth-btn {
+    border: none;
+    width: 100%;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.auth-third-party {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hr-or{
+    opacity: 0.5;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    width: 100%;
+    display: flex;
+    font-size: 13px;
+}
+
+.auth-swap-container {
+    margin: auto;
+    display: flex;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.auth-swap-container > div > a {
+    color: var(--main);
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.auth-swap-container > div > a:hover {
+    color: var(--main-hover);
+}
+
+.hr-or > div{
+    justify-self: center;
+    justify-content: center;
+    width: 100%;
+}
+
+hr {
+    margin-top: 8px;
+}
+
+.hr-or > div:nth-child(2){
+    width: 20%;
+    text-align: center;
+    margin-top: -1px;
+}
+
+.password-input-container {
+    display: flex;
+}
+
+.password-icon {
+    font-size: 25px;
+    color: #bcbecb;
+    height: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 10px;
+    background-color: #f1f5fb;
+    cursor: pointer;
+    border-end-end-radius: var(--border-radius);
+    border-start-end-radius: var(--border-radius);
+}
+
+.password-input {
+    border-end-end-radius: 0;
+    border-start-end-radius: 0;
+}
+
+.password-icon:hover {
+    color: #9d9ea3;
+}
+
+.password-icon svg {
+    padding-top: 5px;
+}
+
+.password-hint-container {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #bcbecb;
+    margin-left: 10px;
+}
+
+.password-hint-container > div{
+    display: flex;
+}
+
+.password-hint-container > div > div:first-child{
+    padding-top: 1px;
+}
+
+.password-hint-container label {
+    margin-left: 5px;
+}
+
+.auth-btn-main {
+    margin-top: 15px;
+    background-color: var(--main);
+}
+
+.auth-btn-main:hover {
+    background-color: var(--main-hover);
+}
+
+.auth-form input{
+    width: 100%;
+}
+
+.auth-input-label {
+    text-align: center;
+    font-size: 14px;
+    padding: 0;
+    opacity: 0.5;
+    margin: 0;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    text-align: left;
+}
+
+textarea:focus, input:focus{
+    outline: none;
+}
+
+::placeholder {
+    color: #bcbecb;
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+color: #bcbecb;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+color: #bcbecb;
+}

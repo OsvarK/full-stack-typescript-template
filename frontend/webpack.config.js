@@ -40,7 +40,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebPackPlugin({ 
-            template: path.resolve(__dirname, '../frontend/src/static/index.html')
+            template: path.resolve(__dirname, '../frontend/src/index.html')
         }),
         new dotEnv()
     ],
