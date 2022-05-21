@@ -34,7 +34,7 @@ const loginGoogle = async (req: Request, res: Response) => {
             accountType: AccountType.Google,
             firstName: formateNames(payload.given_name),
             lastName: formateNames(payload.family_name),
-            email: payload.email,
+            email: payload.email.toLowerCase(),
             emailVerified: payload.email_verified,
             isAdmin: false
         };
@@ -74,7 +74,7 @@ const createAccount = async (req: Request, res: Response) => {
         accountType: AccountType.Normal,
         firstName: formateNames(req.body.firstName),
         lastName: formateNames(req.body.lastName),
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
         emailVerified: false,
         hashedPassword: hashedPassword,
         isAdmin: false
@@ -115,6 +115,44 @@ const updateAccountInfo = async (req: Request, res: Response) => {
         } else return res.status(401).json('Account does not exist');
     } catch (ex) { return res.sendStatus(400); }
 };
+
+
+/** Update email */
+const updateEmail = async (req: Request, res: Response) => {
+
+    try {
+        const token = req.cookies[envConfig.names.authCookie];
+        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
+        const account = await accountModel.findById(decoded._id);
+        if (account !== null) {
+
+            const password = hash(req.body.password, envConfig.secrets.passwordHash);
+            const email = req.body.newEmail.toLowerCase();
+            if (password !== account.hashedPassword){
+                return res.status(401).json("Credentials is not valid!");
+            }
+
+            if (account.email === email) {
+                return res.status(401).json("This is already your email!");
+            }
+
+            try {
+                const update = {
+                    email: email,
+                    emailVerified: false,
+                };
+                accountModel.findByIdAndUpdate(account._id, update, (err: any) => {
+                    if (err !== null) {
+                        if (err.code === 11000) return res.status(422).json('Email already exist');
+                        else return res.status(422).json(`Error creating account: ${err.code}`);
+                    }
+                    sendVerifyEmail(req.body.newEmail);
+                    return res.status(200).json('Email has been updated!');
+                });
+            } catch (ex) { return res.sendStatus(400); }
+        } else return res.status(401).json('Account does not exist');
+    } catch (ex) { return res.sendStatus(400); }
+}
 
 
 /** Change password */
@@ -264,6 +302,7 @@ const controller = {
     logoutUser,
     loginUser,
     verifyUser,
+    updateEmail,
     verifyEmail,
     updateAccountInfo
 };

@@ -28,6 +28,19 @@ const ProfileEmailPanel: FC = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        auth.updateEmail(
+            input.email,
+            input.password,
+            (res: Response) => {
+                res.json().then(msg => {
+                    SetAlert({
+                        show: true,
+                        ok: res.ok,
+                        msg: msg
+                    });
+                });
+            },
+        );
     };
 
     if (auth.getUserData().accountType !== "Normal") {

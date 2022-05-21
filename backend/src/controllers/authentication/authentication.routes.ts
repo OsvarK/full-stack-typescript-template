@@ -8,6 +8,7 @@ router.post('/login/google', controller.loginGoogle);
 router.post('/login', controller.loginUser);
 router.patch('/update/info', controller.updateAccountInfo);
 router.patch('/update/password', controller.updatePassword);
+router.patch('/update/email', controller.updateEmail);
 router.post('/signup', controller.createAccount);
 router.get('/logout', controller.logoutUser);
 router.get('/verify', controller.verifyUser);
