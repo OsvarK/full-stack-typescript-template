@@ -2,6 +2,7 @@ import "./authentication.css";
 import { useAuth } from "../../contexts/authentication.context";
 import ProfileDataPanel from "./components/profileDataPanel.cmpt";
 import ProfilePasswordPanel from "./components/profilePasswordPanel.cmpt";
+import ProfileEmailPanel from "./components/profileEmailPanel.cmpt";
 import ProfileSettingsPanel from "./components/profileSettingsPanel.cmpt";
 import { FC, useState } from "react";
 
@@ -11,7 +12,8 @@ const ProfilePage: FC = () => {
     enum Panel {
         account = "account",
         password = "password",
-        settings = "settings"
+        settings = "settings",
+        email = "email"
     };
 
     const [panel, SetPanel] = useState<Panel>(Panel.account)
@@ -24,6 +26,8 @@ const ProfilePage: FC = () => {
               return <ProfilePasswordPanel />;
           case Panel.settings:
               return <ProfileSettingsPanel />;
+          case Panel.email:
+              return <ProfileEmailPanel />
           default:
             return null;
         }
@@ -44,6 +48,7 @@ const ProfilePage: FC = () => {
             <div className="profile-root-container">
                 <div className="profile-menu-container">
                     <label style={activeStyle(Panel.account)} className="noselect" onClick={() => SetPanel(Panel.account)}>Account</label>
+                    <label style={activeStyle(Panel.email)} className="noselect" onClick={() => SetPanel(Panel.email)}>Email</label>
                     <label style={activeStyle(Panel.password)} className="noselect" onClick={() => SetPanel(Panel.password)}>Password</label>
                     <label style={activeStyle(Panel.settings)} className="noselect" onClick={() => SetPanel(Panel.settings)}>Settings</label>
                 </div>

@@ -53,7 +53,7 @@ const ProfileDataPanel: FC = () => {
 
     return (
         <div className="auth-container">
-        <h1>Account Data</h1>
+        <h1>Account Info</h1>
         <p className="auth-tooltop">{auth.getUserData().firstName} {auth.getUserData().lastName}</p>
         <Alert show={alert.show} ok={alert.ok} msg={alert.msg} />
         <form autoComplete="off" onSubmit={handleSubmit}>

@@ -24,6 +24,7 @@ export interface userData {
 
 /** Defines the AuthenticationContext */
 interface IAuthenticationContext {
+    updateEmail: (newEmail: string, password: string, callback: MethodCallBack) => void,
     updatePassword: (newPassword: string, currentPassword: string, callback: MethodCallBack) => void,
     deleteAccount: (callback: MethodCallBack) => void,
     updateAccountInfo: (callback: MethodCallBack, firstname?: string, lastname?: string) => void
@@ -38,6 +39,7 @@ interface IAuthenticationContext {
 
 /** Initiate the context */
 const AuthenticationContext = createContext<IAuthenticationContext>({
+    updateEmail: () => null,
     updatePassword: () => null,
     updateAccountInfo: () => null,
     deleteAccount: () => null,
@@ -168,12 +170,27 @@ export const AuthenticationProvider: FC<{children: React.ReactElement}> = ({chil
         }).then((res: Response) => callback(res));
     }
 
+    /** Update email */
+    const updateEmail = (newEmail: string, password: string, callback: MethodCallBack) => {
+        fetch('/api/auth/update/email',
+        {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                "newEmail": newEmail,
+                "password": password
+            })
+        }).then((res: Response) => {
+            fetchUser(() => callback(res));
+        });
+    }
 
     /** Data that is being passed down the context */
     const value = {
         login,
         logout,
         signup,
+        updateEmail,
         deleteAccount,
         loginUsingGoogle,
         updatePassword,
