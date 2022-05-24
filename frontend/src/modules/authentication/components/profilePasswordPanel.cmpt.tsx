@@ -60,7 +60,7 @@ const ProfilePasswordPanel: FC = () => {
         return (
             <div className="auth-container">
                 <h1>{auth.getUserData().accountType}</h1>
-                <p className="auth-tooltop">accounts does not have a password</p>
+                <p className="auth-tooltop">is taking care of your password</p>
             </div>
         );
     };
