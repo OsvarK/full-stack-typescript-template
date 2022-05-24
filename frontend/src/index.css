@@ -23,3 +23,14 @@ p {
   word-break: break-all;
   white-space: normal;
 }
+
+.header-root {
+  padding: 20px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.header-root a{
+  padding: 16px;
+}

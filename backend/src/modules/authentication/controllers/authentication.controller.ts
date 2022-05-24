@@ -1,12 +1,12 @@
-import e, { Request, Response } from "express"
-import jwt, { JwtPayload, VerifyCallback } from "jsonwebtoken";
+import { Request, Response } from "express"
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import { CallbackError } from "mongoose";
-import { hash } from "../../utils/Hash.util";
-import { validatePassword } from "../../utils/validation.utils";
-import envConfig from "../../configs/env.config";
-import accountModel, { IAccount, AccountType } from "./account.model";
-import { sendEmail } from "../../utils/email.util";
+import { hash } from "../utils/Hash.util";
+import { validatePassword } from "../utils/validation.utils";
+import envConfig from "../../../configs/env.config";
+import accountModel, { IAccount, AccountType } from "../models/account.model";
+import { formateNames, getUserIdFromToken, sendVerifyEmail, setAccountLoggedIn, terminateAccountSession } from "../utils/authentication.util";
 
 
 /** Login the user using Google Identity Services */
@@ -203,20 +203,10 @@ const deleteAccount = async (req: Request, res: Response) => {
 
 
 /** Logout the user */
-const logoutUser = async (req: Request, res: Response) => {
+const logoutUser = async (_req: Request, res: Response) => {
     terminateAccountSession(res);
     return res.sendStatus(200);
 };
-
-
-/** Retrives all the users in the database */
-const getAllAccounts = async (_req: Request, res: Response) => {
-    accountModel.find((err: CallbackError, accounts: IAccount[]) => {
-        if (err) return res.sendStatus(500);
-        return res.status(200).json(accounts);
-    });
-};
-
 
 /** Verifies the token and return the user data */
 const verifyUser = async (req: Request, res: Response) => {
@@ -241,58 +231,6 @@ const verifyEmail = async (req: Request, res: Response) => {
             return res.sendStatus(200);
         });
     } catch { return res.sendStatus(422) }
-}
-
-
-/** Send email that user can click on to verify there email with */
-const sendVerifyEmail = (email: string) => {
-    const token = jwt.sign(
-        {email: email},
-        envConfig.secrets.jwt,
-        {expiresIn: '600s'}
-    );
-
-    sendEmail(email, 'Email verification', `Click this link to verify your email: ${envConfig.url + '/api/auth/verifyemail/'}` + token.toString())
-}
-
-/** Retrives the user id from token */
-const getUserIdFromToken = (req: Request) => {
-    const token = req.cookies[envConfig.names.authCookie];
-    const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
-    return decoded._id;
-}
-
-
-/** Set the cookie that defines the user's authentication */
-const setAccountLoggedIn = (res: Response, accountId: String) => {
-    //Expires in 24H: 86400sec
-
-    const token = jwt.sign(
-        {_id: accountId},
-        envConfig.secrets.jwt,
-        {expiresIn: '86400s'}
-    );
-
-    res.cookie(envConfig.names.authCookie, token, {
-        httpOnly: true,
-        maxAge: 86_400_000
-    });
-}
-
-/** Terminates the cookie that holds the user's authentication */
-const terminateAccountSession = (res: Response) => {
-    res.clearCookie(envConfig.names.authCookie);
-}
-
-/** Format the names */
-const formateNames = (name: string) => {
-    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-}
-
-
-/** Exports all the admin controllers */
-export const adminController = {
-    getAllAccounts,
 }
 
 /** Exports all the default controllers */
