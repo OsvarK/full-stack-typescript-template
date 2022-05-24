@@ -98,9 +98,8 @@ const createAccount = async (req: Request, res: Response) => {
 /** Update account information */
 const updateAccountInfo = async (req: Request, res: Response) => {
     try {
-        const token = req.cookies[envConfig.names.authCookie];
-        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
-        const account = await accountModel.findById(decoded._id);
+        const id = getUserIdFromToken(req);
+        const account = await accountModel.findById(id);
         if (account !== null) {
             try {
                 const update = {
@@ -121,9 +120,8 @@ const updateAccountInfo = async (req: Request, res: Response) => {
 const updateEmail = async (req: Request, res: Response) => {
 
     try {
-        const token = req.cookies[envConfig.names.authCookie];
-        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
-        const account = await accountModel.findById(decoded._id);
+        const id = getUserIdFromToken(req);
+        const account = await accountModel.findById(id);
         if (account !== null) {
 
             const password = hash(req.body.password, envConfig.secrets.passwordHash);
@@ -158,9 +156,8 @@ const updateEmail = async (req: Request, res: Response) => {
 /** Change password */
 const updatePassword = async (req: Request, res: Response) => {
     try {
-        const token = req.cookies[envConfig.names.authCookie];
-        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
-        const account = await accountModel.findById(decoded._id);
+        const id = getUserIdFromToken(req);
+        const account = await accountModel.findById(id);
 
         if (!validatePassword(req.body.newPassword)){
             return res.status(422).json("Password does not meet the password requirements");
@@ -197,9 +194,8 @@ const updatePassword = async (req: Request, res: Response) => {
 /** Delete account by id */
 const deleteAccount = async (req: Request, res: Response) => {
     try {
-        const token = req.cookies[envConfig.names.authCookie];
-        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
-        const account = await accountModel.findByIdAndDelete(decoded._id);
+        const id = getUserIdFromToken(req);
+        const account = await accountModel.findByIdAndDelete(id);
         if (account !== null) return res.sendStatus(200);
         return res.status(401).json('Account does not exist');
     } catch (ex) { return res.sendStatus(400); }
@@ -214,7 +210,7 @@ const logoutUser = async (req: Request, res: Response) => {
 
 
 /** Retrives all the users in the database */
-const getAllAccounts = async (req: Request, res: Response) => {
+const getAllAccounts = async (_req: Request, res: Response) => {
     accountModel.find((err: CallbackError, accounts: IAccount[]) => {
         if (err) return res.sendStatus(500);
         return res.status(200).json(accounts);
@@ -225,9 +221,8 @@ const getAllAccounts = async (req: Request, res: Response) => {
 /** Verifies the token and return the user data */
 const verifyUser = async (req: Request, res: Response) => {
     try {
-        const token = req.cookies[envConfig.names.authCookie];
-        const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
-        accountModel.findById(decoded._id, (err: CallbackError, user: IAccount) => {
+        const id = getUserIdFromToken(req);
+        accountModel.findById(id, (err: CallbackError, user: IAccount) => {
             if (err) return res.status(422).json('The ID may not be valid!');
             return res.status(200).json(user)
         });
@@ -258,6 +253,13 @@ const sendVerifyEmail = (email: string) => {
     );
 
     sendEmail(email, 'Email verification', `Click this link to verify your email: ${envConfig.url + '/api/auth/verifyemail/'}` + token.toString())
+}
+
+/** Retrives the user id from token */
+const getUserIdFromToken = (req: Request) => {
+    const token = req.cookies[envConfig.names.authCookie];
+    const decoded = jwt.verify(token, envConfig.secrets.jwt) as JwtPayload;
+    return decoded._id;
 }
 
 
