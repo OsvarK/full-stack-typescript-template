@@ -153,12 +153,19 @@ hr {
     height: 50px;
     padding-left: 10px;
     padding-right: 10px;
-    margin-bottom: 10px;
     background-color: #f1f5fb;
     cursor: pointer;
     border-end-end-radius: var(--border-radius);
     border-start-end-radius: var(--border-radius);
+    display: flex;
 }
+
+.password-icon svg {
+    margin: auto;
+    padding: auto;
+    margin-top: 10px;
+}
+
 
 .password-input {
     border-end-end-radius: 0;
