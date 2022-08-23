@@ -13,6 +13,14 @@ Normal node installation, meaning you only need to run `npm install` then create
 | MONGODB_DATABASE_URL  | Connection string to your MongoDB |
 | MONGODB_DATABASE_NAME | Name of the Database in MongoDB   |
 
+| SECRET_PASSWORD_HASH | Your secret for hasing the passwords   |
+| GOOGLE_CLIENT_ID | Your Google Client ID   |
+| JWT_SECRET | Your secret for JWT |
+| AUTH_COOKIE_NAME | not required, add this to change token name   |
+| EMAIL_SERVICE | Service for nodemailer  |
+| EMAIL_USER | User for nodemailer  |
+| EMAIL_PASS | Password for nodemailer   |
+
 &nbsp;
 
 ## Node Scripts | How to run the application
