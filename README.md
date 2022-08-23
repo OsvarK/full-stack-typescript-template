@@ -12,7 +12,6 @@ Normal node installation, meaning you only need to run `npm install` then create
 | --------------------- | --------------------------------- |
 | MONGODB_DATABASE_URL  | Connection string to your MongoDB |
 | MONGODB_DATABASE_NAME | Name of the Database in MongoDB   |
-
 | SECRET_PASSWORD_HASH | Your secret for hasing the passwords   |
 | GOOGLE_CLIENT_ID | Your Google Client ID   |
 | JWT_SECRET | Your secret for JWT |
